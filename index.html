@@ -13,6 +13,12 @@
 			a {
 				cursor: pointer;
 			}
+			.btn + .btn {
+				margin-left: 16px;
+			}
+			.form-control {
+				width: 100%;
+			}
 		</style>
 
 	</head>
@@ -20,31 +26,27 @@
 		<div ng-controller='blogController'>
 			<nav class='navbar navbar-inverse navbar-fixed-top'>
 				<div class='container'>
-					<a class='navbar-brand'>Cool Blog</a>
+					<a class='navbar-brand'>CS 360 Magical Blog of Wonder and Joy</a>
 				</div>
 			</nav>
 			<div class='container'>
 				<div>
 					<ol class="breadcrumb">
-						<li ng-class='{active: !state.post}'><a ng-click='state.post=null'>Posts</a></li>
-						<li ng-if='state.post' class='active'>{{state.post.title}}</li>
-
-						<li class='pull-right'>
-							<a ng-if='!state.post' class='' ng-click='addPost()'>Add Blog Post</a>
-							<a ng-if='state.post' class='' ng-click='editPost()'>Edit Blog Post</a>
-						</li>
+						<li ng-class='{active: !state.activePost}'><a ng-click='state.activePost=null; state.editing=false'>Posts</a></li>
+						<li ng-if='state.activePost' class='active'>{{state.activePost.title}}</li>
 					</ol>
 				</div>
 				<!-- blog list -->
-				<div ng-if='!state.post'>
+				<div ng-if='!state.activePost'>
 					<ul>
 						<li ng-repeat='post in posts'>
-							<a ng-click='state.post=post'>{{post.title}}</a>
+							<a ng-click='state.activePost=post'>{{post.title}}</a>
 						</li>
 					</ul>
+					<a class='btn btn-success' ng-click='addPost()'>Add Blog Post</a>
 				</div>
-				<div ng-if='state.post && !editing' blog-post ng-model='state.post'></div>
-				<div ng-if='state.post && editing' blog-post-editor ng-model='state.post'></div>
+				<div ng-if='state.activePost && !state.editing' blog-post ng-model='state.activePost'></div>
+				<div ng-if='state.activePost && state.editing' blog-post-editor ng-model='state.activePost'></div>
 			</div>
 		</div>
 	</body>
