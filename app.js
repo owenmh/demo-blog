@@ -14,12 +14,14 @@
 				addPost: function()
 				{
 					var post = {
-						id: '',
+						id: Math.random(),
 						title: 'Untitled Post',
 						creationDate: new Date().getTime(),
-						content: ''
+						content: '',
+						views: 0
 					};
-					$scope.posts.push(post);
+
+					$scope.posts[post.id] = post;
 					blogService.savePost(post);
 					$scope.editPost(post);
 				},
@@ -30,6 +32,7 @@
 				},
 				savePost: function(post)
 				{
+					post.creationDate = new Date().getTime();
 					blogService.savePost(post);
 					$scope.state.editing = false;
 				},
@@ -38,12 +41,14 @@
 					$scope.state.editing = false;
 					$scope.state.activePost = null;
 
-					var i = $scope.posts.indexOf(post);
-					if (i >= 0)
-					{
-						$scope.posts.splice(i, 1);
-						blogService.deletePost(post);
-					}
+					delete $scope.posts[post.id];
+					blogService.deletePost(post);
+				},
+				viewPost: function(post)
+				{
+					post.views++;
+					blogService.savePost(post);
+					$scope.state.activePost = post;
 				}
 			});
 
@@ -53,26 +58,23 @@
 		}
 	]);
 
-	app.factory('blogService',['$q', function($q)
+	app.factory('blogService',['$http', function($http)
 	{
-		var posts = [{
-			title: 'A very long day',
-			content: 'Today was a very long day',
-			creationDate: new Date().getTime()
-		}];
-
 		return {
 			getPosts: function()
 			{
-				return $q.when(posts);
+				return $http.get('http://localhost:3000/posts')
+					.then(function(response) {
+						return response.data;
+					});
 			},
 			savePost: function(post)
 			{
-
+				return $http.put('http://localhost:3000/posts/' + post.id, post);
 			},
 			deletePost: function(post)
 			{
-
+				return $http.delete('http://localhost:3000/posts/' + post.id);
 			}
 		};
 	}]);
@@ -83,10 +85,10 @@
 			scope: {
 				post: '=ngModel'
 			},
-			template: "" + 
-				"<div>" + 
+			template: "" +
+				"<div>" +
 					"<h1>{{post.title}}</h1>" +
-					"<h3>{{ post.creationDate | date }}</h3>" +
+					"<em>{{ post.creationDate | date:'medium' }}</em>" +
 					"<p>{{post.content}}</p>" +
 					"<button class='btn btn-success' ng-click='edit()'>Edit Blog Post</button>" +
 				"</div>",
@@ -106,15 +108,15 @@
 			scope: {
 				post: '=ngModel'
 			},
-			template: "" + 
-				"<div class='form-group'>" + 
+			template: "" +
+				"<div class='form-group'>" +
 					"<h1><input type='text' ng-model='post.title' /></h1>" +
-					"<h3>{{ post.creationDate | date }}</h3>" +
+					"<em>{{ post.creationDate | date:'medium' }}</em>" +
 					"<textarea class='form-control' ng-model='post.content' rows='10'></textarea>" +
 				"</div>" +
-				"<div class='form-group'>" + 
-					"<button class='btn btn-danger' ng-click='delete()'>Delete</button>" +
-					"<button class='btn btn-primary' ng-click='save()'>Publish</button>" +
+				"<div class='form-group pull-right'>" +
+					"<button class='btn btn-default' ng-click='delete()'>Delete</button>" +
+					"<button class='btn btn-success' ng-click='save()'>Publish</button>" +
 				"</div>",
 			link: function($scope)
 			{
