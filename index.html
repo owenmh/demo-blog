@@ -3,32 +3,22 @@
 	<head>
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+		<!-- AngularJS -->
 		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js'></script>
+		<!-- Our styles and code -->
+		<link rel="stylesheet" href="styles.css">
 		<script src='app.js'></script>
-
-		<style>
-			body {
-				padding-top: 70px;
-			}
-			a {
-				cursor: pointer;
-			}
-			.btn + .btn {
-				margin-left: 16px;
-			}
-			.form-control {
-				width: 100%;
-			}
-		</style>
-
 	</head>
 	<body ng-app='blogApp'>
-		<div ng-controller='blogController'>
+		<div ng-controller='blogController' class="main-page">
+
+			<!-- header -->
 			<nav class='navbar navbar-inverse navbar-fixed-top'>
 				<div class='container'>
 					<a class='navbar-brand'>CS 360 Magical Blog of Wonder and Joy</a>
 				</div>
 			</nav>
+
 			<div class='container'>
 				<div>
 					<ol class="breadcrumb">
@@ -36,18 +26,25 @@
 						<li ng-if='state.activePost' class='active'>{{state.activePost.title}}</li>
 					</ol>
 				</div>
-				<!-- blog list -->
+
+				<!-- blog post list -->
 				<div ng-if='!state.activePost'>
 					<ul>
 						<li ng-repeat='post in posts'>
-							<a ng-click='state.activePost=post'>{{post.title}}</a>
+							<h3><a ng-click='viewPost(post)'>{{post.title}}</a></h3>
+							<div>{{ post.views || 0 }} views <span ng-if="post.views > 2" class="label label-warning">Popular!</span></div>
+							<em>Posted at {{ post.creationDate | date:'medium' || 0 }}</em>
 						</li>
 					</ul>
 					<a class='btn btn-success' ng-click='addPost()'>Add Blog Post</a>
 				</div>
+
 				<div ng-if='state.activePost && !state.editing' blog-post ng-model='state.activePost'></div>
 				<div ng-if='state.activePost && state.editing' blog-post-editor ng-model='state.activePost'></div>
 			</div>
 		</div>
+		<footer>
+			<span>Built with love from Qualtrics</span>
+		</footer>
 	</body>
 </html>
