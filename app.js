@@ -58,23 +58,29 @@
 		}
 	]);
 
-	app.factory('blogService',['$http', function($http)
+	app.factory('blogService',['$http', '$q', function($http, $q)
 	{
+        	var posts = {};
 		return {
 			getPosts: function()
 			{
-				return $http.get('http://localhost:3000/posts')
-					.then(function(response) {
-						return response.data;
-					});
+                		return $q.when(posts);
+				//return $http.get('http://localhost:3000/posts')
+				//	.then(function(response) {
+				//		return response.data;
+				//	});
 			},
 			savePost: function(post)
 			{
-				return $http.put('http://localhost:3000/posts/' + post.id, post);
+				//return $http.put('http://localhost:3000/posts/' + post.id, post);
+		                posts[post.id] = post;
+		                return $q.when(post);
 			},
 			deletePost: function(post)
 			{
-				return $http.delete('http://localhost:3000/posts/' + post.id);
+				//return $http.delete('http://localhost:3000/posts/' + post.id);
+		                delete posts[post.id];
+		                return $q.when(post);
 			}
 		};
 	}]);
