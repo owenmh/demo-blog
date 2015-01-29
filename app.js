@@ -10,7 +10,7 @@
 					editing: false,
 					activePost: null
 				},
-				posts: [],
+				posts: {},
 				addPost: function()
 				{
 					var post = {
