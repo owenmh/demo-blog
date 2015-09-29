@@ -48,4 +48,23 @@
 			<span>Built with love from Qualtrics</span>
 		</footer>
 	</body>
+	<script type='text/ng-template' id='templates/view-post.html'>
+		<div>
+			<h1>{{post.title}}</h1>
+			<em>{{ post.creationDate | date:'medium' }}</em>
+			<p>{{post.content}}</p>
+			<button class='btn btn-success' ng-click='edit()'>Edit Blog Post</button>
+		</div>
+	</script>
+	<script type='text/ng-template' id='templates/edit-post.html'>
+		<div class='form-group'>
+			<h1><input type='text' ng-model='post.title' /></h1>
+			<em>{{ post.creationDate | date:'medium' }}</em>
+			<textarea class='form-control' ng-model='post.content' rows='10'></textarea>
+		</div>
+		<div class='form-group pull-right'>
+			<button class='btn btn-default' ng-click='delete()'>Delete</button>
+			<button class='btn btn-success' ng-click='save()'>Publish</button>
+		</div>
+	</script>
 </html>

@@ -1,9 +1,8 @@
-(function(app)
-{
+(function(app) {
 	app.controller('blogController', [
 		'$scope',
 		'blogService',
-		function($scope, blogService)
+		function ($scope, blogService)
 		{
 			angular.extend($scope, {
 				state: {
@@ -11,8 +10,7 @@
 					activePost: null
 				},
 				posts: {},
-				addPost: function()
-				{
+				addPost: function () {
 					var post = {
 						id: Math.random(),
 						title: 'Untitled Post',
@@ -25,27 +23,23 @@
 					blogService.savePost(post);
 					$scope.editPost(post);
 				},
-				editPost: function(post)
-				{
+				editPost: function (post) {
 					$scope.state.activePost = post;
 					$scope.state.editing = true;
 				},
-				savePost: function(post)
-				{
+				savePost: function (post) {
 					post.creationDate = new Date().getTime();
 					blogService.savePost(post);
 					$scope.state.editing = false;
 				},
-				deletePost: function(post)
-				{
+				deletePost: function (post) {
 					$scope.state.editing = false;
 					$scope.state.activePost = null;
 
 					delete $scope.posts[post.id];
 					blogService.deletePost(post);
 				},
-				viewPost: function(post)
-				{
+				viewPost: function (post) {
 					post.views++;
 					blogService.savePost(post);
 					$scope.state.activePost = post;
@@ -61,7 +55,7 @@
 	app.factory('blogService',[
 		'$window',
 		'$q',
-		function($window, $q) {
+		function ($window, $q) {
 
 			function getPosts() {
 				return angular.fromJson($window.localStorage.posts || '{}');
@@ -72,21 +66,18 @@
 			}
 
 			return {
-				getPosts: function()
-				{
+				getPosts: function() {
 					return $q.when(getPosts());
 				},
-				savePost: function(post)
-				{
+				savePost: function (post) {
 					var posts = getPosts();
 					posts[post.id] = post;
 					setPosts(posts);
 					return $q.when(post);
 				},
-				deletePost: function(post)
-				{
+				deletePost: function (post) {
 					var posts = getPosts();
-					delete posts[post];
+					delete posts[post.id];
 					setPosts(posts);
 					return $q.when(post);
 				}
@@ -94,54 +85,35 @@
 		}
 	]);
 
-	app.directive('blogPost', [function() {
+	app.directive('blogPost', [function () {
 		return {
 			restrict: 'A',
 			scope: {
 				post: '=ngModel'
 			},
-			template: "" +
-				"<div>" +
-					"<h1>{{post.title}}</h1>" +
-					"<em>{{ post.creationDate | date:'medium' }}</em>" +
-					"<p>{{post.content}}</p>" +
-					"<button class='btn btn-success' ng-click='edit()'>Edit Blog Post</button>" +
-				"</div>",
-			link: function($scope)
-			{
-				$scope.edit = function()
-				{
+			templateUrl: 'templates/view-post.html',
+			link: function ($scope) {
+				$scope.edit = function () {
 					$scope.$parent.editPost($scope.post);
 				};
 			}
 		};
 	}]);
 
-	app.directive('blogPostEditor', [function() {
+	app.directive('blogPostEditor', [function () {
 		return {
 			restrict: 'A',
 			scope: {
 				post: '=ngModel'
 			},
-			template: "" +
-				"<div class='form-group'>" +
-					"<h1><input type='text' ng-model='post.title' /></h1>" +
-					"<em>{{ post.creationDate | date:'medium' }}</em>" +
-					"<textarea class='form-control' ng-model='post.content' rows='10'></textarea>" +
-				"</div>" +
-				"<div class='form-group pull-right'>" +
-					"<button class='btn btn-default' ng-click='delete()'>Delete</button>" +
-					"<button class='btn btn-success' ng-click='save()'>Publish</button>" +
-				"</div>",
-			link: function($scope)
-			{
+			templateUrl: 'templates/edit-post.html',
+			link: function ($scope) {
+
 				angular.extend($scope, {
-					delete: function()
-					{
+					delete: function () {
 						$scope.$parent.deletePost($scope.post);
 					},
-					save: function()
-					{
+					save: function () {
 						$scope.$parent.savePost($scope.post);
 					}
 				});
